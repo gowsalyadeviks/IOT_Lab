@@ -1,0 +1,64 @@
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(3, 2);
+
+// Define pin numbers for the ultrasonic sensor
+const int trigPin = 9;
+const int echoPin = 10;
+
+// Variables for the duration and distance
+long duration;
+int distance;
+
+void setup() {
+  Serial.begin(9600); // Open the serial port
+  mySerial.begin(9600); // Open the Bluetooth serial port
+
+  // Initialize the ultrasonic sensor pins
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  // Send an ultrasonic pulse
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Read the echo pin
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate the distance
+  distance = duration * 0.034 / 2;
+
+  // Print the distance to the serial monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  // Check water level and send appropriate messages
+  if (distance == 9) {
+    mySerial.println("Water level low");
+    Serial.println("Water level low");
+  } else if (distance == 4.5) {
+    mySerial.println("Water level medium");
+    Serial.println("Water level medium");
+  } else if (distance < 3) {
+    mySerial.println("Water level high");
+    Serial.println("Water level high");
+  } else {
+    mySerial.println("Water level normal");
+    Serial.println("Water level normal");
+  }
+
+  // Handle Bluetooth to Serial communication
+  if (mySerial.available()) {
+    Serial.println(mySerial.readString()); // Send from serial to Bluetooth
+  }
+  if (Serial.available()) {
+    mySerial.println(Serial.readString()); // Send from Bluetooth to serial
+  }
+
+  delay(1000); // Delay for a second before the next loop
+}
