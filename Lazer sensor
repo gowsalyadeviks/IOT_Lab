@@ -1,0 +1,14 @@
+const int laserPin = 9; // Pin connected to the laser's control pin
+
+void setup() {
+  pinMode(laserPin, OUTPUT); // Set the pin as OUTPUT
+  digitalWrite(laserPin, LOW); // Start with laser off
+}
+
+void loop() {
+  digitalWrite(laserPin, HIGH); // Turn the laser on
+  delay(1000); // Wait for 1 second
+ 
+  digitalWrite(laserPin, LOW); // Turn the laser off
+  delay(1000); // Wait for 1 second
+}
